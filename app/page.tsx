@@ -4,6 +4,6 @@ export default function Home() {
   return (
     <main>
       <Button size='sm'>Click meeeee</Button>
-    </main >
+    </main>
   )
 }
