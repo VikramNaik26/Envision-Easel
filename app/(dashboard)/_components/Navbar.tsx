@@ -8,7 +8,6 @@ const Navbar = () => {
       <div className="hidden lg:flex lg:flex-1">
         { /* TODO: Add Search */}
       </div>
-
       <UserButton />
     </nav>
   )
