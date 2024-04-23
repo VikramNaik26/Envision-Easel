@@ -1,6 +1,6 @@
 'use client'
 
-import { useOrganizationList } from "@clerk/nextjs/app-beta/client"
+import { useOrganizationList } from "@clerk/nextjs"
 import { Item } from "./Item"
 
 export const List = () => {
