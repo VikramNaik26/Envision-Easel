@@ -9,7 +9,7 @@ import {
   useEffect
 } from 'react'
 import qs from 'query-string'
-import { useDebounceCallback, useDebounceValue } from 'usehooks-ts'
+import { useDebounceValue } from 'usehooks-ts'
 
 export const SearchInput = () => {
   const router = useRouter()
