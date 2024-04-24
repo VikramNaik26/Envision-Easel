@@ -3,8 +3,16 @@
 import { useOrganization } from "@clerk/nextjs";
 import { EmptyOrg } from "./_components/EmptyOrg";
 import Navbar from "./_components/Navbar";
+import { BoardList } from "./_components/BoardList";
 
-export default function Dashboard() {
+interface DashboardProps {
+  searchParams: {
+    search?: string
+    favorites?: string
+  }
+}
+
+export default function Dashboard({ searchParams }: DashboardProps) {
   const { organization } = useOrganization()
 
   return (
@@ -14,7 +22,12 @@ export default function Dashboard() {
         {
           !organization
             ? <EmptyOrg />
-            : <div>hello</div>
+            : (
+              <BoardList
+                orgId={organization.id}
+                query={searchParams}
+              />
+            )
         }
       </div>
     </section>
