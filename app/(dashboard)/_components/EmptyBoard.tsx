@@ -3,23 +3,13 @@
 import Image from "next/image"
 import { api } from "@/convex/_generated/api"
 import { useOrganization } from "@clerk/nextjs"
+import { useApiMutation } from "@/hooks/useApiMutation"
 
 import { Button } from "@/components/ui/button"
-import { useApiMutation } from "@/hooks/useApiMutation"
+import { toast } from "sonner"
 
 export const EmptyBoards = () => {
   const { organization } = useOrganization()
-  // standard convex mutation
-  // const create = useMutation(api.easel.create)
-
-  // const onClick = () => {
-  //   if (!organization) return
-  //   create({
-  //     orgId: organization.id,
-  //     title: "Untitled",
-  //   })
-  // }
-
   // custom hook
   const { mutate, pending } = useApiMutation(api.easel.create)
 
@@ -28,6 +18,11 @@ export const EmptyBoards = () => {
     mutate({
       orgId: organization.id,
       title: "Untitled",
+    }).then((id) => {
+      toast.success('Board created')
+      // TODO: redirect to board/:id
+    }).catch((err) => {
+      toast.error('Failed to create board')
     })
   }
 

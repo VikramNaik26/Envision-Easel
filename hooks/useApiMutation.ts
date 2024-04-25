@@ -7,7 +7,7 @@ export const useApiMutation = (mutataionFunction: any) => {
 
   const mutate = (payload: any) => {
     setPending(true)
-    apiMutation(payload)
+    return apiMutation(payload)
       .finally(() => setPending(false))
       .then((data) => data)
       .catch((err) => {
