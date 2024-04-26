@@ -3,6 +3,9 @@
 import Image from "next/image"
 import Link from "next/link"
 import { Overlay } from "./Overlay"
+import { formatDistanceToNow } from 'date-fns'
+import { useAuth } from "@clerk/nextjs"
+import { Footer } from "./Footer"
 
 interface EaselCardProps {
   id: string
@@ -25,6 +28,10 @@ export const EaselCard = ({
   orgId,
   isFavorite
 }: EaselCardProps) => {
+  const { userId } = useAuth()
+  const authorLabel = userId === authorId ? 'You' : authorName
+  const createdAtLabel = formatDistanceToNow(createdAt, { addSuffix: true })
+
   return (
     <Link
       href={`/board/${id}`}
@@ -39,6 +46,14 @@ export const EaselCard = ({
           />
           <Overlay />
         </div>
+        <Footer
+          isFavorite={isFavorite}
+          title={title}
+          authorLabel={authorLabel}
+          createdAtLabel={createdAtLabel}
+          onClick={() => { }}
+          disabled={false}
+        />
       </div>
     </Link>
   )
