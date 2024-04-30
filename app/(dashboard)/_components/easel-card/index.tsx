@@ -5,6 +5,7 @@ import Link from "next/link"
 import { Overlay } from "./Overlay"
 import { formatDistanceToNow } from 'date-fns'
 import { useAuth } from "@clerk/nextjs"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Footer } from "./Footer"
 
 interface EaselCardProps {
@@ -56,5 +57,13 @@ export const EaselCard = ({
         />
       </div>
     </Link>
+  )
+}
+
+EaselCard.Skeleton = function EaselCardSkeleton() {
+  return (
+    <div className="aspect-[100/127] rounded-lg overflow-hidden">
+      <Skeleton className="h-full w-full" />
+    </div>
   )
 }
