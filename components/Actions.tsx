@@ -1,6 +1,6 @@
 'use client'
 
-import { Link2, Trash2 } from "lucide-react"
+import { Link2, Pencil, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import { DropdownMenuContentProps } from "@radix-ui/react-dropdown-menu"
 import {
@@ -14,6 +14,7 @@ import { ConfirmModel } from "./ConfirmModel"
 import { useApiMutation } from "@/hooks/useApiMutation"
 import { api } from "@/convex/_generated/api"
 import { Button } from "@/components/ui/button"
+import { useRenameModel } from "@/store/useRenameModel"
 
 interface ActionsProps {
   children: React.ReactNode
@@ -30,6 +31,7 @@ export const Action = ({
   id,
   title
 }: ActionsProps) => {
+  const { onOpen } = useRenameModel()
   const { mutate, pending } = useApiMutation(api.easel.remove)
 
   const onCopyLink = () => {
@@ -63,6 +65,13 @@ export const Action = ({
         >
           <Link2 className="h-4 w-4 mr-2" />
           Copy board link
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => onOpen(id, title)}
+          className="p-3 cursor-pointer"
+        >
+          <Pencil className="h-4 w-4 mr-2" />
+          Rename
         </DropdownMenuItem>
         <ConfirmModel
           header="Delete board?"
