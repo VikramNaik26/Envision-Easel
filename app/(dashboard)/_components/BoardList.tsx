@@ -21,7 +21,7 @@ export const BoardList = ({
   orgId,
   query
 }: BoardListProps) => {
-  const data = useQuery(api.board.get, { orgId })
+  const data = useQuery(api.board.get, { orgId, ...query })
 
   if (data === undefined) {
     return (
