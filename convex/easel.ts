@@ -85,3 +85,82 @@ export const update = mutation({
     return easel
   }
 })
+
+export const favorite = mutation({
+  args: { id: v.id("boards"), orgId: v.string() },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity()
+    console.log(args)
+
+    if (!identity) {
+      throw new Error("Unauthorized")
+    }
+
+    const easel = await ctx.db.get(args.id)
+
+    if (!easel) {
+      throw new Error("Easel not found")
+    }
+
+    const userId = identity.subject
+
+    const existingFavorite = await ctx.db
+      .query('userFavorites')
+      .withIndex('by_user_board_org', (q) =>
+        q
+          .eq('userId', userId)
+          .eq('boardId', easel._id)
+          .eq('orgId', args.orgId)
+      )
+      .unique()
+
+    if (existingFavorite) {
+      throw new Error('Board Already Favorited')
+    }
+
+    await ctx.db.insert('userFavorites', {
+      userId,
+      orgId: args.orgId,
+      boardId: easel._id
+    })
+
+    return easel
+  }
+})
+
+export const unfavorite = mutation({
+  args: { id: v.id("boards") },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity()
+
+    if (!identity) {
+      throw new Error("Unauthorized")
+    }
+
+    const easel = await ctx.db.get(args.id)
+
+    if (!easel) {
+      throw new Error("Easel not found")
+    }
+
+    const userId = identity.subject
+
+    const existingFavorite = await ctx.db
+      .query('userFavorites')
+      .withIndex('by_user_board', (q) =>
+        q
+          .eq('userId', userId)
+          .eq('boardId', easel._id)
+        // TODO: check if orgId needed
+      )
+      .unique()
+
+    if (!existingFavorite) {
+      throw new Error('Favorited board not found')
+    }
+
+    await ctx.db.delete(existingFavorite._id)
+
+    return easel
+  }
+})

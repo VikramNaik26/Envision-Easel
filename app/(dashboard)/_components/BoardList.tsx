@@ -72,7 +72,7 @@ export const BoardList = ({
             authorName={easel.authorName}
             createdAt={easel._creationTime}
             orgId={easel.orgId}
-            isFavorite={false}
+            isFavorite={easel.isFavorite}
           />
         ))}
       </div>

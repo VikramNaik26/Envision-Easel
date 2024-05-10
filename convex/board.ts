@@ -18,6 +18,24 @@ export const get = query({
       .order('desc')
       .collect()
 
-    return easels
+    const boardsWithFavoriteRelation = easels.map(async (easel) => {
+      return ctx.db
+        .query('userFavorites')
+        .withIndex('by_user_board', (q) =>
+          q
+            .eq('userId', identity.subject)
+            .eq('boardId', easel._id)
+        )
+        .unique()
+        .then((favorite) => {
+          return {
+            ...easel,
+            isFavorite: !!favorite,
+          }
+        })
+    })
+
+    const boardsWithFavoriteBoolean = Promise.all(boardsWithFavoriteRelation)
+    return boardsWithFavoriteBoolean
   }
 })
