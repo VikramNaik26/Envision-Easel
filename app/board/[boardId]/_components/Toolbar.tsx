@@ -1,6 +1,6 @@
 export const Toolbar = () => {
   return (
-    <div className="absolute top-[50%] -translate-y-[50%] flex flex-col gap-y-4">
+    <div className="absolute top-[50%] -translate-y-[50%] left-2 flex flex-col gap-y-4">
       <ul className="bg-white rounded-md p-1.5 flex gap-y-1 flex-col items-center shadow-md list-none">
         <li>Pencil</li>
         <li>Circle</li>
@@ -12,5 +12,11 @@ export const Toolbar = () => {
         <li>Redo</li>
       </ul>
     </div>
+  )
+}
+
+Toolbar.Skeleton = function ToolbarSkeleton() {
+  return (
+    <div className="absolute top-[50%] -translate-y-[50%] left-2 flex flex-col gap-y-4 bg-white h-[360px] w-[52px] rounded-md shadow-md" />
   )
 }
