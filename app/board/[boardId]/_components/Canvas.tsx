@@ -11,7 +11,6 @@ interface CanvasProps {
 
 export const Canvas = ({ boardId }: CanvasProps) => {
   const info = useSelf(me => me.info)
-  console.log(info)
 
   return (
     <main
