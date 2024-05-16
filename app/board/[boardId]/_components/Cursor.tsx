@@ -17,31 +17,36 @@ export const Cursor = memo(({
   const cursor = useOther(connectionId, user => user?.presence.cursor)
 
   const name = info?.name || "Anonymous"
-  console.log(info, cursor)
 
   if (!cursor) return null
 
   const { x, y } = cursor
 
   return (
-    <p>
-      <foreignObject
+    <foreignObject
+      style={{
+        transform: `translateX(${x}px) translateY(${y}px)`
+      }}
+      width={50}
+      height={name.length * 10 + 24}
+      className="relative drop-shadow-md"
+    >
+      <MousePointer2
+        className="w-5 h-5"
         style={{
-          transform: `tranlateX(${x}px) tranlateY(${y}px)`
+          fill: connectionIdToColor(connectionId),
+          color: connectionIdToColor(connectionId),
         }}
-        width={50}
-        height={50}
-        className="relative drop-shadow-md"
+      />
+      <div
+        className="absolute px-1.5 py-0.5 text-white rounded-md text-xs font-semibold"
+        style={{
+          backgroundColor: connectionIdToColor(connectionId), 
+        }}
       >
-        <MousePointer2
-          className="w-5 h-5"
-          style={{
-            fill: connectionIdToColor(connectionId),
-            color: connectionIdToColor(connectionId),
-          }}
-        />
-      </foreignObject>
-    </p>
+        {name}
+      </div>
+    </foreignObject>
   )
 })
 
