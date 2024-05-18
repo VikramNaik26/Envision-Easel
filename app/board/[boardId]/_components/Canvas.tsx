@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { nanoid } from "nanoid"
 import { LiveObject } from "@liveblocks/client"
 
@@ -9,7 +9,8 @@ import {
   useCanUndo,
   useCanRedo,
   useMutation,
-  useStorage
+  useStorage,
+  useOthersMapped
 } from "@/liveblocks.config"
 import {
   Camera,
@@ -23,7 +24,10 @@ import { Info } from "./Info"
 import { Participants } from "./Participants"
 import { Toolbar } from "./Toolbar"
 import { CursorsPresence } from "./CursorsPresence"
-import { pointerEventToCanvasPoint } from "@/lib/utils"
+import {
+  connectionIdToColor,
+  pointerEventToCanvasPoint
+} from "@/lib/utils"
 import { LayerPreview } from "./LayerPreview"
 
 const MAX_LAYERS = 100
@@ -38,11 +42,11 @@ export const Canvas = ({ boardId }: CanvasProps) => {
   const [canvasState, setCanvasState] = useState<CanvasState>({
     mode: CanvasMode.None
   })
-  const [camera, setCamera] = useState<Camera>({ x: 0, y: 0 })
+  const [camera, setCamera] = useState<Camera>({ x: 255, y: 0 })
   const [lastUsedColor, setLastUsedColor] = useState<Color>({
     r: 0,
     g: 0,
-    b: 0
+    b: 0 
   })
 
   const history = useHistory()
@@ -126,6 +130,22 @@ export const Canvas = ({ boardId }: CanvasProps) => {
     insertLayer
   ])
 
+  const selections = useOthersMapped(other => other.presence.selection)
+
+  const layerIdsToColorSelection = useMemo(() => {
+    const layerIdsToColorSelection: Record<string, string> = {}
+
+    for (const user of selections) {
+      const [connectionId, selection] = user
+
+      for (const layerId of selection) {
+        layerIdsToColorSelection[layerId] = connectionIdToColor(connectionId)
+      }
+    }
+
+    return layerIdsToColorSelection
+  }, [selections])
+
   return (
     <main
       className="h-full w-full relative bg-neutral-100 touch-none"
@@ -158,7 +178,7 @@ export const Canvas = ({ boardId }: CanvasProps) => {
               key={layerId}
               id={layerId}
               onLayerPointerDown={(e, layerId) => { }}
-              selectionColor="#000"
+              selectionColor={layerIdsToColorSelection[layerId]}
             />
           ))}
           <CursorsPresence />
