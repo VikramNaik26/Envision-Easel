@@ -29,6 +29,7 @@ import {
   pointerEventToCanvasPoint
 } from "@/lib/utils"
 import { LayerPreview } from "./LayerPreview"
+import { SelectionBox } from "./SelectionBox"
 
 const MAX_LAYERS = 100
 
@@ -206,6 +207,9 @@ export const Canvas = ({ boardId }: CanvasProps) => {
               />
             )
           })}
+          <SelectionBox
+            onResizeHandlePointerDown={() => { }}
+          />
           <CursorsPresence />
         </g>
       </svg>
