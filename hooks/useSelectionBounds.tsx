@@ -38,6 +38,6 @@ export const useSelectionBounds = () => {
       .map(layerId => root.layers.get(layerId)!)
       .filter(Boolean)
 
-      return boundingBox(selectedLayer)
+    return boundingBox(selectedLayer)
   }, shallow)
 }
