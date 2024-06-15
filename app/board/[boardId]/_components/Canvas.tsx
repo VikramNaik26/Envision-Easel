@@ -113,6 +113,14 @@ export const Canvas = ({ boardId }: CanvasProps) => {
     setCanvasState({ mode: CanvasMode.Translating, current: point })
   }, [canvasState])
 
+  const unSelectLayers = useMutation((
+    { self, setMyPresence }
+  ) => {
+    if (self.presence.selection.length > 0) {
+      setMyPresence({ selection: [] }, { addToHistory: true })
+    }
+  }, [])
+
   const resizeSelectedLayer = useMutation((
     { storage, self },
     point: Point
@@ -184,13 +192,40 @@ export const Canvas = ({ boardId }: CanvasProps) => {
     setMyPresence({ cursor: null })
   }, [])
 
+  const onPointerDown = useCallback((
+    e: React.PointerEvent
+  ) => {
+    const point = pointerEventToCanvasPoint(e, camera)
+
+    if (canvasState.mode === CanvasMode.Inserting) {
+      return
+    }
+
+    // TODO: add case for drawing
+
+    setCanvasState({ orgin: point, mode: CanvasMode.Pressing })
+  },
+    [
+      camera,
+      canvasState.mode,
+      setCanvasState
+    ])
+
   const onPointerUp = useMutation((
     { },
     e
   ) => {
     const point = pointerEventToCanvasPoint(e, camera)
 
-    if (canvasState.mode === CanvasMode.Inserting) {
+    if (
+      canvasState.mode === CanvasMode.None ||
+      canvasState.mode === CanvasMode.Pressing
+    ) {
+      unSelectLayers()
+      setCanvasState({
+        mode: CanvasMode.None
+      })
+    } else if (canvasState.mode === CanvasMode.Inserting) {
       insertLayer(
         canvasState.layerType,
         point
@@ -204,7 +239,8 @@ export const Canvas = ({ boardId }: CanvasProps) => {
     camera,
     canvasState,
     history,
-    insertLayer
+    insertLayer,
+    unSelectLayers
   ])
 
   const selections = useOthersMapped(other => other.presence.selection)
@@ -272,6 +308,7 @@ export const Canvas = ({ boardId }: CanvasProps) => {
         onPointerMove={onPointerMove}
         onPointerLeave={onPointerLeave}
         onPointerUp={onPointerUp}
+        onPointerDown={onPointerDown}
       >
         <g
           style={{
