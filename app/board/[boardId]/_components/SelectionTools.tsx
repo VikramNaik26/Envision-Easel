@@ -5,7 +5,11 @@ import { memo } from "react"
 import { Camera, Color } from "@/types/canvas"
 import { useMutation, useSelf } from "@/liveblocks.config"
 import { useSelectionBounds } from "@/hooks/useSelectionBounds"
+import { useDeleteLayers } from "@/hooks/useDeleteLayers"
 import { ColorPicker } from "./ColorPicker"
+import { Hint } from "@/components/Hint"
+import { Button } from "@/components/ui/button"
+import { Trash2 } from "lucide-react"
 
 interface SelectionToolsProps {
   camera: Camera,
@@ -30,6 +34,8 @@ export const SelectionTools = memo(({
     })
   }, [selection, setLastUsedColor])
 
+  const deleteLayers = useDeleteLayers()
+
   const selectionBounds = useSelectionBounds()
 
   if (!selectionBounds) return null
@@ -50,6 +56,19 @@ export const SelectionTools = memo(({
       <ColorPicker
         onChange={setFill}
       />
+      <div className="flex items-center pl-2 ml-2 border-l border-neutral-200">
+        <Hint
+          label="Delele"
+        >
+          <Button
+            variant="board"
+            size="icon"
+            onClick={deleteLayers}
+          >
+            <Trash2 />
+          </Button>
+        </Hint>
+      </div>
     </div>
   )
 })
