@@ -4,16 +4,19 @@ import { useOrganization } from "@clerk/nextjs";
 import { EmptyOrg } from "./_components/EmptyOrg";
 import Navbar from "./_components/Navbar";
 import { BoardList } from "./_components/BoardList";
+import { useSearchParams } from "next/navigation";
 
-interface DashboardProps {
-  searchParams: {
-    search?: string
-    favorites?: string
-  }
-}
-
-export default function Dashboard({ searchParams }: DashboardProps) {
+export default function Dashboard() {
   const { organization } = useOrganization()
+  const params = useSearchParams()
+
+  const search = params.get('search')
+  const favorites = params.get('favorites')
+
+  const searchParams = (search || favorites) ? {
+    ...(search && { search }),
+    ...(favorites && { favorites })
+  } : {}
 
   return (
     <section className="min-h-screen">
