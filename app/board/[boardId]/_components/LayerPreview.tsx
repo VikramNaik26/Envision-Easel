@@ -6,6 +6,7 @@ import { memo } from "react"
 import { LayerType } from "@/types/canvas"
 import { LayerRectangle } from "./LayerRectangle"
 import { Ellipse } from "./Ellipse"
+import { Text } from "./Text"
 
 interface LayerPreviewProps {
   id: string
@@ -23,6 +24,15 @@ export const LayerPreview = memo(({
   if (!layer) return null
 
   switch (layer.type) {
+    case LayerType.Text:
+      return (
+        <Text
+          id={id}
+          layer={layer}
+          onPointerDown={onLayerPointerDown}
+          selectionColor={selectionColor}
+        />
+      )
     case LayerType.Ellipse:
       return (
         <Ellipse
