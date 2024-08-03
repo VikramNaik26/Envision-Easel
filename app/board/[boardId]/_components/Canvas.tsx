@@ -28,6 +28,7 @@ import { Toolbar } from "./Toolbar"
 import { CursorsPresence } from "./CursorsPresence"
 import {
   connectionIdToColor,
+  findIntersectingLayersWithRectangle,
   pointerEventToCanvasPoint,
   resizeBounds
 } from "@/lib/utils"
@@ -36,6 +37,8 @@ import { SelectionBox } from "./SelectionBox"
 import { SelectionTools } from "./SelectionTools"
 
 const MAX_LAYERS = 100
+
+const SELECTION_NET_THRESHOLD = 5
 
 interface CanvasProps {
   boardId: string
@@ -122,6 +125,44 @@ export const Canvas = ({ boardId }: CanvasProps) => {
     }
   }, [])
 
+  const updateSelectionNet = useMutation((
+    { storage, setMyPresence },
+    current: Point,
+    origin: Point
+  ) => {
+    const layers = storage.get("layers").toImmutable()
+
+    setCanvasState({
+      mode: CanvasMode.SelecitonNet,
+      origin,
+      current
+    })
+
+    const ids = findIntersectingLayersWithRectangle(
+      layerIds,
+      layers,
+      origin,
+      current
+    )
+
+    setMyPresence({ selection: ids })
+  }, [layerIds])
+
+  const startMultiSelection = useCallback((
+    current: Point,
+    origin: Point
+  ) => {
+    if (
+      Math.abs(current.x - origin.x) + Math.abs(current.y - origin.y) > SELECTION_NET_THRESHOLD
+    ) {
+      setCanvasState({
+        mode: CanvasMode.SelecitonNet,
+        origin,
+        current
+      })
+    }
+  }, [])
+
   const resizeSelectedLayer = useMutation((
     { storage, self },
     point: Point
@@ -148,10 +189,6 @@ export const Canvas = ({ boardId }: CanvasProps) => {
     corner: Side,
     initialBounds: XYWH
   ) => {
-    console.log({
-      corner,
-      initialBounds
-    })
     history.pause()
     setCanvasState({
       mode: CanvasMode.Resizing,
@@ -175,7 +212,11 @@ export const Canvas = ({ boardId }: CanvasProps) => {
 
     const current = pointerEventToCanvasPoint(e, camera)
 
-    if (canvasState.mode === CanvasMode.Translating) {
+    if (canvasState.mode === CanvasMode.Pressing) {
+      startMultiSelection(current, canvasState.orgin)
+    } else if (canvasState.mode === CanvasMode.SelecitonNet) {
+      updateSelectionNet(current, canvasState.origin)
+    } else if (canvasState.mode === CanvasMode.Translating) {
       translateSelectedLayer(current)
     } else if (canvasState.mode === CanvasMode.Resizing) {
       resizeSelectedLayer(current)
