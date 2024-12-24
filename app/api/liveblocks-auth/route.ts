@@ -1,4 +1,4 @@
-import { auth, currentUser } from "@clerk/nextjs"
+import { auth, currentUser } from "@clerk/nextjs/server"
 import { Liveblocks } from "@liveblocks/node"
 import { ConvexHttpClient } from "convex/browser"
 
@@ -11,17 +11,17 @@ const liveblocks = new Liveblocks({
 })
 
 export async function POST(req: Request) {
-  const authorization = auth()
+  const { orgId } = await auth()
   const user = await currentUser()
 
-  if (!authorization && !user) {
+  if (!orgId && !user) {
     return new Response("Unauthorized", { status: 403 })
   }
 
   const { room } = await req.json()
   const board = await convex.query(api.easel.get, { id: room })
 
-  if (board?.orgId !== authorization?.orgId) {
+  if (board?.orgId !== orgId) {
     return new Response("Unauthorized", { status: 403 })
   }
 
